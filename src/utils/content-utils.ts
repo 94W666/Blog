@@ -12,7 +12,11 @@ async function getRawSortedPosts() {
 	const sorted = allBlogPosts.sort((a, b) => {
 		const dateA = new Date(a.data.published);
 		const dateB = new Date(b.data.published);
-		return dateA > dateB ? -1 : 1;
+		if (dateA > dateB) return -1;
+		if (dateA < dateB) return 1;
+		// 如果日期相同，按标题字母顺序降序（或升序）作为次要排序
+		// 这里使用标题的 localeCompare 升序，确保稳定
+		return a.data.title.localeCompare(b.data.title);
 	});
 	return sorted;
 }

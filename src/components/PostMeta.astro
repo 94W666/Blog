@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
-import { formatDateToYYYYMMDD } from "../utils/date-utils";
+import { formatDateTime } from "../utils/date-utils";
 import { getCategoryUrl, getTagUrl } from "../utils/url-utils";
 
 interface Props {
@@ -11,6 +11,7 @@ interface Props {
 	updated?: Date;
 	tags: string[];
 	category: string | null;
+	address?: string;
 	hideTagsForMobile?: boolean;
 	hideUpdateDate?: boolean;
 }
@@ -19,6 +20,7 @@ const {
 	updated,
 	tags,
 	category,
+	address,
 	hideTagsForMobile = false,
 	hideUpdateDate = false,
 } = Astro.props;
@@ -32,7 +34,7 @@ const className = Astro.props.class;
         >
             <Icon name="material-symbols:calendar-today-outline-rounded" class="text-xl"></Icon>
         </div>
-        <span class="text-50 text-sm font-medium">{formatDateToYYYYMMDD(published)}</span>
+        <span class="text-50 text-sm font-medium">{formatDateTime(published)}</span>
     </div>
 
     <!-- update date -->
@@ -42,7 +44,7 @@ const className = Astro.props.class;
             >
                 <Icon name="material-symbols:edit-calendar-outline-rounded" class="text-xl"></Icon>
             </div>
-            <span class="text-50 text-sm font-medium">{formatDateToYYYYMMDD(updated)}</span>
+            <span class="text-50 text-sm font-medium">{formatDateTime(updated)}</span>
         </div>
     )}
 
@@ -60,6 +62,16 @@ const className = Astro.props.class;
             </a>
         </div>
     </div>
+
+    <!-- address -->
+    {address && (
+        <div class="flex items-center">
+            <div class="meta-icon">
+                <Icon name="material-symbols:location-on-outline-rounded" class="text-xl"></Icon>
+            </div>
+            <span class="text-50 text-sm font-medium">{address}</span>
+        </div>
+    )}
 
     <!-- tags -->
     <div class:list={["items-center", {"flex": !hideTagsForMobile, "hidden md:flex": hideTagsForMobile}]}>
