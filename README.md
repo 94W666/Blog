@@ -6,7 +6,7 @@
 
 这是我的个人博客，基于 [Fuwari](https://github.com/saicaca/fuwari) 模板（一个使用 [Astro](https://astro.build) 构建的静态博客模板）进行定制和扩展。
 
-**在线地址**：[https://your-blog.netlify.app](https://your-blog.netlify.app)（请替换为您的实际部署地址）
+**在线地址**：[https://94w.netlify.app/]
 
 ## ✨ 主要修改与增强
 
