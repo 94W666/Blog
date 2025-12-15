@@ -1,0 +1,212 @@
+---
+import WidgetLayout from "./WidgetLayout.astro";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+	class?: string;
+	style?: string;
+}
+
+const className = Astro.props.class;
+const style = Astro.props.style;
+
+// 示例音频文件（用户可替换）
+const audioSrc = "https://assets.codepen.io/4358584/Anitek_-_Komorebi.mp3"; // 在线示例音乐
+const title = "Komorebi";
+const artist = "Anitek";
+const cover = "https://assets.codepen.io/4358584/cover.jpg"; // 示例封面
+---
+
+<WidgetLayout name="音乐播放器" id="music-player" class={className} style={style}>
+	<div class="music-player-container flex flex-col gap-3">
+		<!-- 封面和歌曲信息 -->
+		<div class="flex items-center gap-3">
+			<div class="w-16 h-16 rounded-lg overflow-hidden bg-[var(--btn-regular-bg)] flex items-center justify-center">
+				{cover ? (
+					<img src={cover} alt="封面" class="w-full h-full object-cover" />
+				) : (
+					<Icon name="fa6-solid:music" class="text-2xl text-[var(--btn-content)]" />
+				)}
+			</div>
+			<div class="flex-1 min-w-0">
+				<div class="font-medium text-[var(--btn-content)] truncate">{title}</div>
+				<div class="text-sm text-[var(--meta-divider)] truncate">{artist}</div>
+			</div>
+		</div>
+
+		<!-- 音频控件 -->
+		<audio id="music-player-audio" preload="metadata" class="hidden">
+			<source src={audioSrc} type="audio/mpeg" />
+			您的浏览器不支持音频元素。
+		</audio>
+
+		<!-- 进度条 -->
+		<div class="flex items-center gap-2">
+			<span class="text-xs text-[var(--meta-divider)]" id="current-time">0:00</span>
+			<div class="flex-1 h-1.5 bg-[var(--btn-regular-bg)] rounded-full overflow-hidden">
+				<div id="progress-bar" class="h-full bg-[var(--primary)] rounded-full w-0"></div>
+			</div>
+			<span class="text-xs text-[var(--meta-divider)]" id="duration">0:00</span>
+		</div>
+
+		<!-- 控制按钮 -->
+		<div class="flex items-center justify-between">
+			<button id="prev-btn" class="p-2 rounded-full hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition" aria-label="上一曲">
+				<Icon name="fa6-solid:backward-step" class="text-xl text-[var(--btn-content)]" />
+			</button>
+			<button id="play-pause-btn" class="p-3 rounded-full bg-[var(--primary)] hover:opacity-90 active:opacity-80 transition" aria-label="播放/暂停">
+				<Icon name="fa6-solid:play" id="play-icon" class="text-xl text-white" />
+				<Icon name="fa6-solid:pause" id="pause-icon" class="text-xl text-white hidden" />
+			</button>
+			<button id="next-btn" class="p-2 rounded-full hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition" aria-label="下一曲">
+				<Icon name="fa6-solid:forward-step" class="text-xl text-[var(--btn-content)]" />
+			</button>
+			<div class="flex items-center gap-2">
+				<button id="volume-btn" class="p-2 rounded-full hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition" aria-label="音量">
+					<Icon name="fa6-solid:volume-high" id="volume-icon" class="text-xl text-[var(--btn-content)]" />
+				</button>
+				<input id="volume-slider" type="range" min="0" max="100" value="80" class="w-20 accent-[var(--primary)]" />
+			</div>
+		</div>
+
+		<!-- 播放列表（可选） -->
+		<div class="text-xs text-[var(--meta-divider)] text-center">
+			当前播放: {title}
+		</div>
+	</div>
+
+	<script>
+		// 客户端交互脚本
+		document.addEventListener('DOMContentLoaded', () => {
+			const audio = document.getElementById('music-player-audio') as HTMLAudioElement;
+			const playPauseBtn = document.getElementById('play-pause-btn') as HTMLButtonElement;
+			const playIcon = document.getElementById('play-icon') as HTMLElement;
+			const pauseIcon = document.getElementById('pause-icon') as HTMLElement;
+			const progressBar = document.getElementById('progress-bar') as HTMLElement;
+			const currentTimeEl = document.getElementById('current-time') as HTMLElement;
+			const durationEl = document.getElementById('duration') as HTMLElement;
+			const volumeBtn = document.getElementById('volume-btn') as HTMLButtonElement;
+			const volumeIcon = document.getElementById('volume-icon') as HTMLElement;
+			const volumeSlider = document.getElementById('volume-slider') as HTMLInputElement;
+			const prevBtn = document.getElementById('prev-btn') as HTMLButtonElement;
+			const nextBtn = document.getElementById('next-btn') as HTMLButtonElement;
+
+			// 格式化时间（秒 -> MM:SS）
+			function formatTime(seconds: number) {
+				const mins = Math.floor(seconds / 60);
+				const secs = Math.floor(seconds % 60);
+				return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+			}
+
+			// 更新进度条
+			function updateProgress() {
+				const percent = (audio.currentTime / audio.duration) * 100 || 0;
+				progressBar.style.width = percent + '%';
+				currentTimeEl.textContent = formatTime(audio.currentTime);
+			}
+
+			// 更新总时长
+			audio.addEventListener('loadedmetadata', () => {
+				durationEl.textContent = formatTime(audio.duration);
+			});
+
+			// 播放/暂停
+			playPauseBtn.addEventListener('click', () => {
+				if (audio.paused) {
+					audio.play();
+					playIcon.classList.add('hidden');
+					pauseIcon.classList.remove('hidden');
+				} else {
+					audio.pause();
+					playIcon.classList.remove('hidden');
+					pauseIcon.classList.add('hidden');
+				}
+			});
+
+			// 进度条点击跳转
+			const progressContainer = progressBar.parentElement;
+			if (progressContainer) {
+				progressContainer.addEventListener('click', (e) => {
+					const rect = (e.target as HTMLElement).getBoundingClientRect();
+					const percent = (e.clientX - rect.left) / rect.width;
+					audio.currentTime = percent * audio.duration;
+					updateProgress();
+				});
+			}
+
+			// 音量控制
+			volumeSlider.addEventListener('input', (e) => {
+				const target = e.target as HTMLInputElement;
+				audio.volume = Number(target.value) / 100;
+				// 更新音量图标
+				if (audio.volume === 0) {
+					volumeIcon.setAttribute('name', 'fa6-solid:volume-off');
+				} else if (audio.volume < 0.5) {
+					volumeIcon.setAttribute('name', 'fa6-solid:volume-low');
+				} else {
+					volumeIcon.setAttribute('name', 'fa6-solid:volume-high');
+				}
+			});
+
+			// 音量按钮静音切换
+			volumeBtn.addEventListener('click', () => {
+				if (audio.volume > 0) {
+					audio.volume = 0;
+					volumeSlider.value = '0';
+					volumeIcon.setAttribute('name', 'fa6-solid:volume-off');
+				} else {
+					audio.volume = 0.8;
+					volumeSlider.value = '80';
+					volumeIcon.setAttribute('name', 'fa6-solid:volume-high');
+				}
+			});
+
+			// 上一曲/下一曲（示例功能，可扩展）
+			prevBtn.addEventListener('click', () => {
+				audio.currentTime = 0;
+				updateProgress();
+			});
+
+			nextBtn.addEventListener('click', () => {
+				audio.currentTime = Math.min(audio.duration, audio.currentTime + 10); // 快进10秒作为示例
+				updateProgress();
+			});
+
+			// 定时更新进度
+			audio.addEventListener('timeupdate', updateProgress);
+
+			// 初始化
+			updateProgress();
+		});
+	</script>
+
+	<style>
+		/* 自定义样式 */
+		.music-player-container {
+			--player-radius: var(--radius-large);
+		}
+		input[type="range"] {
+			-webkit-appearance: none;
+			height: 4px;
+			border-radius: 2px;
+			background: var(--btn-regular-bg);
+			outline: none;
+		}
+		input[type="range"]::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			width: 14px;
+			height: 14px;
+			border-radius: 50%;
+			background: var(--primary);
+			cursor: pointer;
+		}
+		input[type="range"]::-moz-range-thumb {
+			width: 14px;
+			height: 14px;
+			border-radius: 50%;
+			background: var(--primary);
+			cursor: pointer;
+			border: none;
+		}
+	</style>
+</WidgetLayout>

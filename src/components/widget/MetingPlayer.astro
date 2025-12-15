@@ -1,0 +1,95 @@
+---
+import WidgetLayout from "./WidgetLayout.astro";
+
+interface Props {
+	class?: string;
+	style?: string;
+}
+
+const className = Astro.props.class;
+const style = Astro.props.style;
+
+// 配置
+const server = "netease"; // 网易云音乐，可选：netease, tencent, kugou, xiami, baidu
+const type = "playlist"; // 类型：song, playlist, album, search, artist
+const id = "3778678"; // 热门歌曲播放列表ID（网易云热歌榜）
+const auto = "auto"; // 自动播放
+const theme = "var(--primary)"; // 主题颜色使用CSS变量
+---
+
+<WidgetLayout name="热门音乐" id="meting-player" class={className} style={style}>
+	<div id="meting-container"></div>
+
+	<!-- 引入 APlayer 和 MetingJS CSS/JS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css" />
+	<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script>
+
+	<!-- MetingJS 播放器 -->
+	<meting-js
+		server={server}
+		type={type}
+		id={id}
+		auto={auto}
+		theme={theme}
+		loop="all"
+		order="list"
+		preload="auto"
+		volume="0.8"
+		mutex="true"
+		lrc-type="3"
+		list-folded="false"
+		list-max-height="500px"
+	>
+	</meting-js>
+
+	<style>
+		/* 自定义样式以匹配博客主题 */
+		.aplayer {
+			background: var(--card-bg);
+			border-radius: var(--radius-large);
+			box-shadow: none;
+			font-family: inherit;
+			margin: 0;
+		}
+		.aplayer .aplayer-info {
+			border-top: 1px solid var(--line-divider);
+			padding: 10px 15px;
+		}
+		.aplayer .aplayer-title {
+			color: var(--btn-content);
+		}
+		.aplayer .aplayer-author {
+			color: var(--meta-divider);
+		}
+		.aplayer .aplayer-list ol li {
+			border-top: 1px solid var(--line-divider);
+			color: var(--btn-content);
+		}
+		.aplayer .aplayer-list ol li:hover {
+			background: var(--btn-plain-bg-hover);
+		}
+		.aplayer .aplayer-list ol li.aplayer-list-light {
+			background: var(--btn-plain-bg-active);
+		}
+		.aplayer .aplayer-bar {
+			background: var(--btn-regular-bg);
+		}
+		.aplayer .aplayer-bar .aplayer-played {
+			background: var(--primary);
+		}
+		.aplayer .aplayer-bar .aplayer-thumb {
+			background: var(--primary);
+			box-shadow: 0 0 0 2px var(--primary);
+		}
+		.aplayer .aplayer-time {
+			color: var(--meta-divider);
+		}
+		.aplayer .aplayer-volume-wrap .aplayer-volume-bar {
+			background: var(--btn-regular-bg);
+		}
+		.aplayer .aplayer-volume-wrap .aplayer-volume-bar .aplayer-volume {
+			background: var(--primary);
+		}
+	</style>
+</WidgetLayout>
