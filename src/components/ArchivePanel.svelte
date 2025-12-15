@@ -6,14 +6,11 @@ import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { getPostUrlBySlug } from "../utils/url-utils";
 
-export let tags: string[];
-export let categories: string[];
+export let tags: string[] = [];
+export let categories: string[] = [];
 export let sortedPosts: Post[] = [];
 
-const params = new URLSearchParams(window.location.search);
-tags = params.has("tag") ? params.getAll("tag") : [];
-categories = params.has("category") ? params.getAll("category") : [];
-const uncategorized = params.get("uncategorized");
+let uncategorized: string | null = null;
 
 interface Post {
 	slug: string;
@@ -43,6 +40,17 @@ function formatTag(tagList: string[]) {
 }
 
 onMount(async () => {
+	// Read URL parameters on client side
+	const params = new URLSearchParams(window.location.search);
+	const urlTags = params.has("tag") ? params.getAll("tag") : [];
+	const urlCategories = params.has("category") ? params.getAll("category") : [];
+	const urlUncategorized = params.get("uncategorized");
+
+	// Override props with URL parameters if present
+	if (urlTags.length > 0) tags = urlTags;
+	if (urlCategories.length > 0) categories = urlCategories;
+	if (urlUncategorized !== null) uncategorized = urlUncategorized;
+
 	let filteredPosts: Post[] = sortedPosts;
 
 	if (tags.length > 0) {
