@@ -1,4 +1,5 @@
 <script lang="ts">
+import type { CollectionEntry } from "astro:content";
 import { onMount } from "svelte";
 
 import I18nKey from "../i18n/i18nKey";
@@ -19,7 +20,7 @@ interface Post {
 	data: {
 		title: string;
 		tags: string[];
-		category?: string;
+		category: string | null;
 		published: Date;
 	};
 }

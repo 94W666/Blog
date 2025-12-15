@@ -39,3 +39,9 @@ interface SearchResult {
 	raw_url?: string;
 	sub_results?: SearchResult[];
 }
+
+declare module "*.svelte" {
+	import type { SvelteComponent } from "svelte";
+	class Component extends SvelteComponent<Record<string, unknown>> {}
+	export default Component;
+}

@@ -5,10 +5,11 @@ import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPostsList } from "../utils/content-utils";
 
-const sortedPostsList = await getSortedPostsList();
+// biome-ignore lint/suspicious/noExplicitAny: temporary workaround
+const sortedPostsList = (await getSortedPostsList()) as any;
 ---
 
 <MainGridLayout title={i18n(I18nKey.archive)}>
-    <ArchivePanel sortedPosts={sortedPostsList} client:only="svelte"></ArchivePanel>
+    <ArchivePanel tags={[]} categories={[]} sortedPosts={sortedPostsList} client:load></ArchivePanel>
 </MainGridLayout>
 
