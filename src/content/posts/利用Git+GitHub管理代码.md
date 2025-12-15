@@ -13,6 +13,7 @@ address: 南京
 下面是将本地代码推送到 GitHub 的详细步骤，包括初次推送和后续更新的流程。
 
 <h2 id="FX3HY">准备工作</h2>
+
 1. **安装 Git**
     - 下载地址：[https://git-scm.com/downloads](https://git-scm.com/downloads)
     - 安装后配置用户信息：
